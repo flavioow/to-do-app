@@ -1,4 +1,4 @@
-import { getUserIdFromToken } from "@/lib/auth"
+import { getUserIdFromRequest } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -16,17 +16,8 @@ export async function PUT(
     try {
         const { params } = context
 
-        // O token é enviado para Authorization, no formato: Bearer <token>
-        // Portanto, remove-se o prefixo para obter apenas o token
-        const token = req.headers.get("Authorization")?.replace("Bearer ", "")
-        const userId = await getUserIdFromToken(token)
-
-        // Retorna erro se o token for inválido ou ausente
-        if (!userId)
-            return NextResponse.json(
-                { error: "Não autorizado" },
-                { status: 401 },
-            )
+        const userId = await getUserIdFromRequest(req)
+        if (userId instanceof NextResponse) return userId
 
         const { title, body, status } = await req.json()
 
@@ -68,18 +59,8 @@ export async function DELETE(
     try {
         const { params } = context
 
-        // O token é enviado para Authorization, no formato: Bearer <token>
-        // Portanto, remove-se o prefixo para obter apenas o token
-        const token = req.headers.get("Authorization")?.replace("Bearer ", "")
-        const userId = await getUserIdFromToken(token)
-
-        // Retorna erro se o token for inválido ou ausente
-        if (!userId) {
-            return NextResponse.json(
-                { error: "Não autorizado" },
-                { status: 401 },
-            )
-        }
+        const userId = await getUserIdFromRequest(req)
+        if (userId instanceof NextResponse) return userId
 
         const deleted = await prisma.task.deleteMany({
             where: { id: params.id, userId },

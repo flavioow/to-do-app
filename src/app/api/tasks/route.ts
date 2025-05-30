@@ -1,21 +1,12 @@
-import { getUserIdFromToken } from "@/lib/auth"
+import { getUserIdFromRequest } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
 // Listagem de TO-DO
 export async function GET(req: Request) {
     try {
-        // O token é enviado para Authorization, no formato: Bearer <token>
-        // Portanto, remove-se o prefixo para obter apenas o token
-        const token = req.headers.get("Authorization")?.replace("Bearer ", "")
-        const userId = await getUserIdFromToken(token)
-
-        // Retorna erro se o token for inválido ou ausente
-        if (!userId)
-            return NextResponse.json(
-                { error: "Não autorizado" },
-                { status: 401 },
-            )
+        const userId = await getUserIdFromRequest(req)
+        if (userId instanceof NextResponse) return userId
 
         const tasks = await prisma.task.findMany({
             where: { userId },
@@ -38,17 +29,8 @@ export async function GET(req: Request) {
 // Criação de TO-DO
 export async function POST(req: Request) {
     try {
-        // O token é enviado para Authorization, no formato: Bearer <token>
-        // Portanto, remove-se o prefixo para obter apenas o token
-        const token = req.headers.get("Authorization")?.replace("Bearer ", "")
-        const userId = await getUserIdFromToken(token)
-
-        // Retorna erro se o token for inválido ou ausente
-        if (!userId)
-            return NextResponse.json(
-                { error: "Não autorizado" },
-                { status: 401 },
-            )
+        const userId = await getUserIdFromRequest(req)
+        if (userId instanceof NextResponse) return userId
 
         const { title, body } = await req.json()
 
