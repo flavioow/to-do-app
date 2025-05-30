@@ -5,11 +5,9 @@ import { NextResponse } from "next/server"
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json()
+        const { email, password } = await req.json()
 
-        const email = body.email
-        const password = body.password
-
+        // Retorna erro caso o e-mail não seja encontrado
         const user = await prisma.user.findUnique({ where: { email } })
         if (!user)
             return NextResponse.json(
@@ -17,6 +15,7 @@ export async function POST(req: Request) {
                 { status: 404 },
             )
 
+        // Retorna erro caso a senha não esteja correta
         const valid = await comparePassword(password, user.password)
         if (!valid)
             return NextResponse.json(
@@ -30,6 +29,9 @@ export async function POST(req: Request) {
             { status: 200 },
         )
 
+        // O token é anexado no cookie de resposta
+        // - httpOnly: impede acesso via JS
+        // - maxAge: segundos * minutos * horas * dias
         response.cookies.set({
             name: "token",
             value: token,

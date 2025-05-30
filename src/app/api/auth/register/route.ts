@@ -6,6 +6,7 @@ export async function POST(req: Request) {
     try {
         const { email, password } = await req.json()
 
+        // Evita duplicidade de emails cadastrados no banco
         const emailExisting = await prisma.user.findUnique({ where: { email } })
         if (emailExisting)
             return NextResponse.json(
