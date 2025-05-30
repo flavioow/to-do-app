@@ -11,13 +11,24 @@ export async function POST(req: Request) {
         const password = body.password
 
         const user = await prisma.user.findUnique({ where: { email } })
-        if (!user) return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 })
+        if (!user)
+            return NextResponse.json(
+                { error: "Usuário não encontrado" },
+                { status: 404 },
+            )
 
         const valid = await comparePassword(password, user.password)
-        if (!valid) return NextResponse.json({ error: "Senha incorreta" }, { status: 401 })
+        if (!valid)
+            return NextResponse.json(
+                { error: "Senha incorreta" },
+                { status: 401 },
+            )
 
         const token = await signToken({ id: user.id, email: user.email })
-        const response = NextResponse.json({ message: "Login bem sucedido" }, { status: 200 })
+        const response = NextResponse.json(
+            { message: "Login bem sucedido" },
+            { status: 200 },
+        )
 
         response.cookies.set({
             name: "token",
@@ -25,11 +36,14 @@ export async function POST(req: Request) {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             path: "/",
-            maxAge: 60 * 60 * 24 * 30
+            maxAge: 60 * 60 * 24 * 30,
         })
 
         return response
     } catch {
-        return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 })
+        return NextResponse.json(
+            { error: "Erro interno do servidor" },
+            { status: 500 },
+        )
     }
 }

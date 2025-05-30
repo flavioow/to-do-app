@@ -8,7 +8,10 @@ export async function POST(req: Request) {
 
         const emailExisting = await prisma.user.findUnique({ where: { email } })
         if (emailExisting)
-            return NextResponse.json({ error: "Email já cadastrado" }, { status: 400 })
+            return NextResponse.json(
+                { error: "Email já cadastrado" },
+                { status: 400 },
+            )
 
         const hashedPassword = await hashPassword(password)
 
@@ -16,8 +19,14 @@ export async function POST(req: Request) {
             data: { email, password: hashedPassword },
         })
 
-        return NextResponse.json({ id: user.id, email: user.email })
+        return NextResponse.json(
+            { id: user.id, email: user.email },
+            { status: 201 },
+        )
     } catch {
-        return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 })
+        return NextResponse.json(
+            { error: "Erro interno do servidor" },
+            { status: 500 },
+        )
     }
 }
