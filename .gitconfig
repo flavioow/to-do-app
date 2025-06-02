@@ -1,0 +1,23 @@
+[alias]
+    # GIT ADD: @/*
+    add-src = "!git add src && git status"
+
+    # GIT ADD: @/app/*
+    add-app = "!git add src/app && git status"
+    add-api = "!git add src/app/api && git status"
+    add-home = "!git add src/app/(home) && git status"
+    add-todo = "!git add src/app/[id] && git status"
+    add-auth = "!git add src/app/(auth) && git status"
+
+    # GIT ADD: @/components/*
+    add-components = "!git add  src/components && git status"
+    add-ui = "!git add  src/components/ui && git status"
+
+    # GIT ADD: @/lib/*
+    add-lib = "!git add src/lib && git status"
+
+    # GIT ADD: /public/*
+    add-public = "!git add public && git status"
+
+    # GIT ADD: /prisma/*
+    add-prisma = "!git add prisma && git status"
